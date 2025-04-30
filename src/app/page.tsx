@@ -1,20 +1,55 @@
 // app/page.tsx
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '../components/ui/Button';
 import { Search, ChevronRight, CheckCircle, FileText, Users, Clock, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 
+// Mock sample IDs for suggestion demonstration
+const sampleIds = [
+  'A0000559',
+  'A00002',
+  'A0000344',
+  'A0000556',
+  'A0000534'
+];
+
 export default function Home() {
   const [uniqueId, setUniqueId] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const router = useRouter();
+
+  // Filter suggestions based on user input
+  useEffect(() => {
+    if (uniqueId.length > 2) {
+      const filtered = sampleIds.filter(id => 
+        id.toLowerCase().includes(uniqueId.toLowerCase())
+      );
+      setSuggestions(filtered);
+    } else {
+      setSuggestions([]);
+    }
+  }, [uniqueId]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (uniqueId) {
-      router.push(`/report/${uniqueId}`);
+      setIsLoading(true);
+      
+      // Simulate API call with setTimeout
+      setTimeout(() => {
+        router.push(`/report/${uniqueId}`);
+        // No need to reset loading state as we're navigating away
+      }, 800);
     }
+  };
+
+  const selectSuggestion = (suggestion: string) => {
+    setUniqueId(suggestion);
+    setShowSuggestions(false);
   };
 
   return (
@@ -40,15 +75,33 @@ export default function Home() {
                     type="text"
                     value={uniqueId}
                     onChange={(e) => setUniqueId(e.target.value)}
+                    onFocus={() => setShowSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                     placeholder="Enter Loan ID or File Number"
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
                     required
                   />
+                  
+                  {/* Suggestions dropdown */}
+                  {showSuggestions && suggestions.length > 0 && (
+                    <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
+                      {suggestions.map((suggestion, index) => (
+                        <div 
+                          key={index}
+                          className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-gray-700 z-10"
+                          onClick={() => selectSuggestion(suggestion)}
+                        >
+                          {suggestion}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <Button 
                   type="submit" 
                   size="lg" 
                   className="rounded-l-none shadow-sm"
+                  isLoading={isLoading}
                 >
                   Search
                 </Button>
@@ -65,27 +118,25 @@ export default function Home() {
                 <ul className="space-y-6">
                   <li className="flex items-start">
                     <CheckCircle className="h-6 w-6 mr-3 mt-0.5 flex-shrink-0 text-blue-200" />
-                    <span className="text-lg">Advanced risk prediction with 93% accuracy</span>
+                    <span className="text-lg">AI-Powered Risk Analysis</span>
                   </li>
                   <li className="flex items-start">
                     <CheckCircle className="h-6 w-6 mr-3 mt-0.5 flex-shrink-0 text-blue-200" />
-                    <span className="text-lg">Comprehensive loan portfolio analysis</span>
+                    <span className="text-lg"> Automated Summary & PDF Reports</span>
                   </li>
                   <li className="flex items-start">
                     <CheckCircle className="h-6 w-6 mr-3 mt-0.5 flex-shrink-0 text-blue-200" />
-                    <span className="text-lg">Real-time credit score integration</span>
+                    <span className="text-lg">Interactive Risk Dashboard</span>
                   </li>
                   <li className="flex items-start">
                     <CheckCircle className="h-6 w-6 mr-3 mt-0.5 flex-shrink-0 text-blue-200" />
-                    <span className="text-lg">Document verification automation</span>
+                    <span className="text-lg">Third-Party Integration Ready</span>
                   </li>
                 </ul>
               </div>
             </div>
           </div>
         </section>
-
-        
 
         {/* Features Section */}
         <section className="mb-12">
@@ -122,11 +173,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-       
       </div>
-      
-
     </div>
   );
 }
