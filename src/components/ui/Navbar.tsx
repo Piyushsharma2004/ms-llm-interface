@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronDown } from 'lucide-react';
-import Button from './Button';
+import { Menu, X } from 'lucide-react';
 import Image from 'next/image';
 
 interface NavLinkProps {
@@ -16,12 +15,12 @@ interface NavLinkProps {
 const NavLink = ({ href, children, className = '' }: NavLinkProps) => {
   const pathname = usePathname();
   const isActive = pathname === href;
-  
+
   return (
-    <Link 
+    <Link
       href={href}
       className={`text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-        isActive ? 'text-blue-600' : ''
+        isActive ? 'text-blue-600 font-semibold' : ''
       } ${className}`}
     >
       {children}
@@ -31,51 +30,54 @@ const NavLink = ({ href, children, className = '' }: NavLinkProps) => {
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
   };
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
   return (
-    <nav className="bg-white shadow-md">
-      <div className="container mx-auto px-4">
+    <nav className="bg-white shadow-sm">
+      <div className=" mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo and Desktop Navigation */}
+          
+          {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0">
-              <div className="flex items-center">
-                <Image src={'/msfincap-logo.png'} alt="Logo" width={50} height={50} className="h-8 w-8 mr-2" />
-                <span className="text-gray-900 font-semibold text-lg">LLM based Loan Risk & Summary</span>
-              </div>
+            <Link href="/" className="flex items-center space-x-2">
+              <Image
+                src="/msfincap-logo.png"
+                alt="Logo"
+                width={40}
+                height={40}
+                className="h-8 w-8"
+              />
+              <span className="text-gray-900 font-semibold text-lg tracking-tight">
+                Loan Risk & Summary
+              </span>
             </Link>
-            
-           
           </div>
-          
-          
-          
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex i  tems-center space-x-6">
+            {/* Add future nav links here if needed */}
+            <Link
+              href="/file-request"
+              className="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition"
+            >
+              Test New Data
+            </Link>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <div className="md:hidden">
             <button
               onClick={toggleNavbar}
               className="text-gray-700 hover:text-blue-600 focus:outline-none"
             >
-              {isOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
       </div>
-      
-    
     </nav>
   );
 };
